@@ -11,25 +11,25 @@ namespace UsingDotNET.DirMover
     {
         public App()
         {
-            //Services = ConfigureServices();
+            Services = ConfigureServices();
         }
 
-        //public new static App Current => (App)Application.Current;
+        public new static App Current => (App)Application.Current;
 
-        //public IServiceProvider Services { get; }
+        public IServiceProvider Services { get; }
 
-        //private static IServiceProvider ConfigureServices()
-        //{
-        //    //var services = new ServiceCollection();
+        private static IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
 
-        //    // DataContext
-        //    //services.AddTransient<IToDoDataContext, ToDoDataContext>();
+            //DataContext
+            //services.AddTransient<IToDoDataContext, ToDoDataContext>();
 
-        //    // ViewModels
-        //    //services.AddTransient<MainViewModel>();
-        //    //services.AddTransient<NewToDoViewModel>();
+            //ViewModels
+            services.AddTransient<MainViewModel>();
+            //services.AddTransient<NewToDoViewModel>();
 
-        //    //return services.BuildServiceProvider();
-        //}
+            return services.BuildServiceProvider();
+        }
     }
 }
