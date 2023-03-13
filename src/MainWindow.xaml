@@ -4,14 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" FontSize="16"
-        Title="MainWindow" Height="800" Width="900" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" FontSize="16" MinHeight="800"
+        Title="DirMover" Height="800" Width="900" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2.5*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ListView Grid.Row="0" ItemsSource="{Binding LinkedDirs}" Name="LvLinks" SelectedItem="{Binding SelectedDir}" SelectionMode="Single">
@@ -22,6 +22,7 @@
                         <GridViewColumn Header="App" DisplayMemberBinding="{Binding App}" Width="200"/>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type, Converter={StaticResource enumConverter}}" Width="200"/>
+                        <GridViewColumn Header="Time Created" DisplayMemberBinding="{Binding TimeCreated, StringFormat={}{0:yyyy-MM-dd hh:mm:ss tt}}" Width="200"/>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
@@ -47,7 +48,7 @@
             <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0">App Name</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtName" Grid.Row="0" Grid.Column="1" Height="30" Text="{Binding SelectedDir.Link}"/>
 
-            <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0">Source </TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0">Source</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtLink" Grid.Row="1" Grid.Column="1" Height="30" Text="{Binding SelectedDir.Link}"/>
 
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">Target</TextBlock>
@@ -56,9 +57,18 @@
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">Method</TextBlock>
             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5">
                 <RadioButton Margin="5,5,60,5" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding SelectedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=D}">/D symbolic link</RadioButton>
-                <RadioButton Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding SelectedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=J}">/J junction </RadioButton>
+                <RadioButton Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding SelectedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=J}">/J junction</RadioButton>
             </StackPanel>
 
-            <Button Margin="5" Padding="5" Name="BtnMove" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}">Move</Button></Grid>
+            <UniformGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Columns="4" Margin="5">
+                <Button Margin="5" Padding="5" Name="BtnMove"  HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}">OK</Button>
+                <Button Margin="5" Padding="5" Name="BtnMove1"  HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}" Content="Delete Link"/>
+
+                <Button Margin="5" Padding="5" Name="BtnMove2"  HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}" Content="Cancel Link"></Button>
+
+                <Button Margin="5" Padding="5" Name="BtnMove3"  HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}">Delete Backup</Button>
+
+            </UniformGrid>
+        </Grid>
     </Grid>
 </Window>

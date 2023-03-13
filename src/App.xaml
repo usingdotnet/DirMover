@@ -4,8 +4,11 @@
              xmlns:converts="clr-namespace:UsingDotNET.DirMover.Converts"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-
         <converts:EnumBooleanConverter x:Key="enumBooleanConverter" />
         <converts:EnumConverter x:Key="enumConverter" />
+        <Style TargetType="Button">
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="MinHeight" Value="60"/>
+        </Style>
     </Application.Resources>
 </Application>

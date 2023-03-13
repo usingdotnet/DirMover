@@ -188,7 +188,7 @@ public partial class MainViewModel : ObservableObject
                 if (d.LinkTarget != null && d.LinkTarget.First() != d.FullName.First() && !d.LinkTarget.StartsWith("Global"))
                 {
                     Console.WriteLine(d.FullName.PadRight(70) + " => " + d.LinkTarget);
-                    LinkedDirs.Add(new LinkedDir( d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D));
+                    LinkedDirs.Add(new LinkedDir( d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D,DateTime.Now));
                 }
                 else
                 {

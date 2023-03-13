@@ -12,12 +12,15 @@ public class LinkedDir
 
     public LinkType Type { get; set; }
 
-    public LinkedDir(string name, string app, string link, string target, LinkType type)
+    public DateTime TimeCreated { get; set; }
+
+    public LinkedDir(string name, string app, string link, string target, LinkType type, DateTime timeCreated)
     {
         Name = name;
         App = app;
         Link = link;
         Target = target;
         Type = type;
+        TimeCreated = timeCreated;
     }
 }
