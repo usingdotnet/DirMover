@@ -9,4 +9,15 @@ public class LinkedDir
     public string Link { get; set; }
 
     public string Target { get; set; }
+
+    public LinkType Type { get; set; }
+
+    public LinkedDir(string name, string app, string link, string target, LinkType type)
+    {
+        Name = name;
+        App = app;
+        Link = link;
+        Target = target;
+        Type = type;
+    }
 }

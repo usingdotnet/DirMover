@@ -11,6 +11,7 @@ namespace UsingDotNET.DirMover.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private const string BakSuffix = ".dmbak";
+    private const string Method = "/d";
 
     public MainViewModel()
     {
@@ -34,8 +35,11 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanMove))]
     private void Move()
     {
-        var a = _selectedDir.Link;
-        var b = _selectedDir.Target;
+        if (_selectedDir != null)
+        {
+            var a = _selectedDir.Link;
+            var b = _selectedDir.Target;
+        }
 
         Move1();
     }
@@ -92,7 +96,7 @@ public partial class MainViewModel : ObservableObject
         }
 
         var task = Cli.Wrap("cmd")
-            .WithArguments($"""/C mklink /d "{link}" "{target}" """)
+            .WithArguments($"""/C mklink {Method} "{link}" "{target}" """)
             .ExecuteAsync();
         await task;
     }
@@ -184,7 +188,7 @@ public partial class MainViewModel : ObservableObject
                 if (d.LinkTarget != null && d.LinkTarget.First() != d.FullName.First() && !d.LinkTarget.StartsWith("Global"))
                 {
                     Console.WriteLine(d.FullName.PadRight(70) + " => " + d.LinkTarget);
-                    LinkedDirs.Add(new LinkedDir {Name = d.Name,App = d.Name, Link =d.FullName, Target = d.LinkTarget});
+                    LinkedDirs.Add(new LinkedDir( d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D));
                 }
                 else
                 {

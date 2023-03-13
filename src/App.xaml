@@ -1,8 +1,11 @@
 ﻿<Application x:Class="UsingDotNET.DirMover.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converts="clr-namespace:UsingDotNET.DirMover.Converts"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <converts:EnumBooleanConverter x:Key="enumBooleanConverter" />
+        <converts:EnumConverter x:Key="enumConverter" />
     </Application.Resources>
 </Application>

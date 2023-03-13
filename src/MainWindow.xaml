@@ -11,7 +11,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="2.5*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ListView Grid.Row="0" ItemsSource="{Binding LinkedDirs}" Name="LvLinks" SelectedItem="{Binding SelectedDir}" SelectionMode="Single">
@@ -21,6 +21,7 @@
                         <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="0"/>
                         <GridViewColumn Header="App" DisplayMemberBinding="{Binding App}" Width="200"/>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                        <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type, Converter={StaticResource enumConverter}}" Width="200"/>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
@@ -32,6 +33,7 @@
         </ListView>
         <Grid Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -51,6 +53,12 @@
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">Target</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch" Name="TxtTarget" Grid.Row="2" Grid.Column="1" Height="30" Text="{Binding SelectedDir.Target}"/>
 
-            <Button Margin="5" Padding="5" Name="BtnMove" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}">Move</Button></Grid>
+            <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">Method</TextBlock>
+            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                <RadioButton Margin="5,5,60,5" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding SelectedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=D}">/D symbolic link</RadioButton>
+                <RadioButton Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding SelectedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=J}">/J junction </RadioButton>
+            </StackPanel>
+
+            <Button Margin="5" Padding="5" Name="BtnMove" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding MoveCommand}">Move</Button></Grid>
     </Grid>
 </Window>
