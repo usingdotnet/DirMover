@@ -40,7 +40,7 @@ internal class Utility
                 var d = new DirectoryInfo(dir);
                 if (d.LinkTarget != null && d.LinkTarget.First() != d.FullName.First() && !d.LinkTarget.StartsWith("Global"))
                 {
-                    var ld = new LinkedDir(d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D, DateTime.Now);
+                    var ld = new LinkedDir(d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D, d.CreationTime);
                     ld.Id = id++;
                     r.Add(ld);
                 }
@@ -51,6 +51,7 @@ internal class Utility
             }
         }
 
+        r = r.OrderBy(x => x.TimeUpdated).ToList();
         return r;
     }
 }

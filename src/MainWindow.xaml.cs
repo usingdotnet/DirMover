@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using UsingDotNET.DirMover.ViewModels;
 
-namespace UsingDotNET.DirMover.Views;
+namespace UsingDotNET.DirMover;
 
 public partial class MainWindow : Window
 {

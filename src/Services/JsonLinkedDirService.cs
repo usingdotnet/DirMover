@@ -7,7 +7,7 @@ namespace UsingDotNET.DirMover.Services;
 
 public class JsonLinkedDirService : ILinkedDirService
 {
-    private readonly List<LinkedDir> _linkedDirs = new List<LinkedDir>();
+    private List<LinkedDir> _linkedDirs = new List<LinkedDir>();
     private const string ConfigFile = "config.json";
 
     public IEnumerable<LinkedDir> GetAll()
@@ -17,6 +17,7 @@ public class JsonLinkedDirService : ILinkedDirService
         {
             var content = File.ReadAllText(ConfigFile, Encoding.UTF8);
             _linkedDirs.AddRange(JsonConvert.DeserializeObject<List<LinkedDir>>(content) ?? new List<LinkedDir>());
+            _linkedDirs = _linkedDirs.OrderBy(x => x.TimeCreated).ToList();
         }
         else
         {
