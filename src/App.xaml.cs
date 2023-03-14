@@ -1,35 +1,34 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using UsingDotNET.DirMover.Services;
 using UsingDotNET.DirMover.ViewModels;
 
-namespace UsingDotNET.DirMover
+namespace UsingDotNET.DirMover;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            Services = ConfigureServices();
-        }
+        Services = ConfigureServices();
+    }
 
-        public new static App Current => (App)Application.Current;
+    public new static App Current => (App)Application.Current;
 
-        public IServiceProvider Services { get; }
+    public IServiceProvider Services { get; }
 
-        private static IServiceProvider ConfigureServices()
-        {
-            var services = new ServiceCollection();
+    private static IServiceProvider ConfigureServices()
+    {
+        var services = new ServiceCollection();
 
-            //DataContext
-            //services.AddTransient<IToDoDataContext, ToDoDataContext>();
+        // Services
+        services.AddTransient<ILinkedDirService, JsonLinkedDirService>();
 
-            //ViewModels
-            services.AddTransient<MainViewModel>();
-            //services.AddTransient<NewToDoViewModel>();
+        // ViewModels
+        services.AddTransient<MainViewModel>();
 
-            return services.BuildServiceProvider();
-        }
+        return services.BuildServiceProvider();
     }
 }

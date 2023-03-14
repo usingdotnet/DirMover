@@ -5,56 +5,93 @@ using System.IO;
 using System.Windows;
 using CliWrap;
 using UsingDotNET.DirMover.Models;
+using UsingDotNET.DirMover.Services;
 
 namespace UsingDotNET.DirMover.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
     private const string BakSuffix = ".dmbak";
-    private const string Method = "/d";
+    private readonly ILinkedDirService _linkedDirService;
 
-    public MainViewModel()
+    public MainViewModel(ILinkedDirService linkedDirService)
     {
+        _linkedDirService = linkedDirService;
         RegisterMessages();
-        LoadLinkedDirss();
+        LoadLinkedDirs();
     }
 
     [ObservableProperty]
     private ObservableCollection<LinkedDir> _linkedDirs = new();
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(MoveCommand))]
-    private LinkedDir? _selectedDir;
+    private LinkedDir _selectedDir;
+
+    [ObservableProperty]
+    private LinkedDir _currentLinkedDir = new LinkedDir();
 
     [RelayCommand]
     private void Changed(LinkedDir dir)
     {
-        var a = 33;
+        if (dir != null)
+        {
+            CurrentLinkedDir = (LinkedDir)dir.Clone();
+        }
+        else
+        {
+            CurrentLinkedDir = new LinkedDir();
+        }
     }
 
-    [RelayCommand(CanExecute = nameof(CanMove))]
+    [RelayCommand]
+    private void NewLinkedDir()
+    {
+        CurrentLinkedDir = new LinkedDir();
+    }
+
+    [RelayCommand]
     private void Move()
     {
-        if (_selectedDir != null)
-        {
-            var a = _selectedDir.Link;
-            var b = _selectedDir.Target;
-        }
-
         Move1();
+    }
+
+    [RelayCommand]
+    private void Cancel()
+    {
+        var r =  MessageBox.Show("cancel?","waring",MessageBoxButton.YesNo,MessageBoxImage.Question,MessageBoxResult.No);
+        if (r == MessageBoxResult.Yes)
+        {
+            var ld = _linkedDirService.Get(_selectedDir.Id);
+            var link = CurrentLinkedDir.Link.TrimEnd('\\');
+            Directory.Delete(link, true); // 删除链接
+
+            var target = CurrentLinkedDir.Target.TrimEnd('\\');
+
+            CopyDirectory(target, link);
+            Directory.Delete(target,true);
+            _linkedDirService.Delete(ld);
+            CurrentLinkedDir = new LinkedDir();
+            LoadLinkedDirs();
+        }
     }
 
     private async void Move1()
     {
-        if (string.IsNullOrEmpty(_selectedDir?.Link) || string.IsNullOrEmpty(_selectedDir.Target))
+        LinkedDir old = null;
+        if (CurrentLinkedDir!.Id != 0)
+        {
+            old = _linkedDirService.Get(CurrentLinkedDir.Id);
+        }
+
+        if (string.IsNullOrEmpty(CurrentLinkedDir?.Link) || string.IsNullOrEmpty(CurrentLinkedDir.Target))
         {
             return;
         }
 
-        var link = _selectedDir.Link.TrimEnd('\\');
-        var target = _selectedDir.Target.TrimEnd('\\');
+        var link = CurrentLinkedDir.Link.TrimEnd('\\');
+        var target = CurrentLinkedDir.Target.TrimEnd('\\');
 
-        if (Directory.Exists(link))
+        if (!Directory.Exists(link))
         {
             MessageBox.Show("源文件夹不存在");
             return;
@@ -62,41 +99,65 @@ public partial class MainViewModel : ObservableObject
 
         if (Directory.Exists(target))
         {
-            MessageBox.Show("目标文件夹已存在");
-            return;
+            //MessageBox.Show("目标文件夹已存在");
+            //return;
         }
 
+        var onlyInfo = false;
         FileInfo fiLink = new FileInfo(link);
-        if (fiLink.LinkTarget != null)
+
+        if (old != null && old.Target == target && fiLink.FullName == old.Link && CurrentLinkedDir.Type == old.Type)
         {
-            var ot = fiLink.LinkTarget.TrimEnd('\\');
-            var nt = target;
-            if (ot == target)
+            onlyInfo = true;
+        }
+
+        if (!onlyInfo)
+        {
+            if (fiLink.LinkTarget != null)
             {
-                MessageBox.Show("无需操作");
-                return;
+                var ot = fiLink.LinkTarget.TrimEnd('\\');
+                var nt = target;
+
+                if (ot != nt)
+                {
+                    CopyDirectory(ot, nt);
+                    Directory.Delete(ot);
+                    Directory.Delete(link, true); // 删除目前的链接
+                    await CreateLink(link, target);
+                }
             }
             else
             {
-                var di1 = new DirectoryInfo(ot);
-                var di2 = new DirectoryInfo(nt);
-                CopyDirectory(di1, di2);
-                var backup = ot + BakSuffix;
-                Directory.Move(ot, backup);
-                Directory.Delete(link); // 删除目前的链接
+                CopyDirectory(link, target);
+                Directory.Delete(link, true);
+                await CreateLink(link, target);
             }
+        }
+
+        if (!_linkedDirService.Contains(CurrentLinkedDir))
+        {
+            _linkedDirService.Add(CurrentLinkedDir);
         }
         else
         {
-            var di1 = new DirectoryInfo(link);
-            var di2 = new DirectoryInfo(target);
-            CopyDirectory(di1, di2);
-            var backup = link + BakSuffix;
-            Directory.Move(link, backup);
+            _linkedDirService.Update(CurrentLinkedDir);
         }
 
+        LoadLinkedDirs();
+    }
+
+    private static void CopyDirectory(string link, string target)
+    {
+        var di1 = new DirectoryInfo(link);
+        var di2 = new DirectoryInfo(target);
+        CopyDirectory(di1, di2);
+    }
+
+    private async Task CreateLink(string link, string target)
+    {
+        var method = $@"/{CurrentLinkedDir.Type.ToString()}";
         var task = Cli.Wrap("cmd")
-            .WithArguments($"""/C mklink {Method} "{link}" "{target}" """)
+            .WithArguments($"""/C mklink {method} "{link}" "{target}" """)
             .ExecuteAsync();
         await task;
     }
@@ -128,19 +189,20 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    private bool CanMove()
-    {
-        return _selectedDir is not null;
-    }
-
     /// <summary>
     /// Loads existing ToDos from the DataContext
     /// </summary>
-    private void LoadLinkedDirss()
+    private void LoadLinkedDirs()
     {
         LinkedDirs.Clear();
-        var dir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        TraverseTree(dir);
+
+        var ds = _linkedDirService.GetAll();
+        foreach (var d in ds)
+        {
+            //var c = (LinkedDir)d.Clone();
+            //c.Id = d.Id;
+            _linkedDirs.Add(d);
+        }
     }
 
     /// <summary>
@@ -152,49 +214,5 @@ public partial class MainViewModel : ObservableObject
         //{
         //    ToDos.Add(e.Value);
         //});
-    }
-
-    public void TraverseTree(string root)
-    {
-        Stack<string> dirs = new Stack<string>(20);
-
-        if (!Directory.Exists(root))
-        {
-            throw new ArgumentException();
-        }
-
-        dirs.Push(root);
-
-        while (dirs.Count > 0)
-        {
-            string currentDir = dirs.Pop();
-            string[] subDirs;
-            try
-            {
-                subDirs = Directory.GetDirectories(currentDir);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                continue;
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                continue;
-            }
-
-            foreach (string dir in subDirs)
-            {
-                var d = new DirectoryInfo(dir);
-                if (d.LinkTarget != null && d.LinkTarget.First() != d.FullName.First() && !d.LinkTarget.StartsWith("Global"))
-                {
-                    Console.WriteLine(d.FullName.PadRight(70) + " => " + d.LinkTarget);
-                    LinkedDirs.Add(new LinkedDir( d.Name, d.Name, d.FullName, d.LinkTarget, LinkType.D,DateTime.Now));
-                }
-                else
-                {
-                    dirs.Push(dir);
-                }
-            }
-        }
     }
 }

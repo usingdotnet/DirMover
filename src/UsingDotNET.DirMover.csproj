@@ -3,17 +3,24 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <AssemblyName>DirMover</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Dirs.db-*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CliWrap" Version="3.6.*" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.*" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.*" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.*" />
   </ItemGroup>
 
   <ItemGroup>
