@@ -72,7 +72,7 @@
                 </StackPanel.Resources>
                 <Button Name="BtnMove" Command="{Binding NewLinkedDirCommand}" Content="New Link"/>
 
-                <Button Name="BtnUpdate"   Command="{Binding MoveCommand}" Content="Move" />
+                <Button Name="BtnUpdate"   Command="{Binding MoveCommand}" Content="Create Link" />
 
                 <Button Name="BtnCancel"  Command="{Binding CancelCommand}" Content="Cancel Link" ToolTip="Delete the link and move the dir to original place"/>
 
