@@ -36,6 +36,7 @@ public partial class MainViewModel : ObservableObject
         if (dir != null)
         {
             CurrentLinkedDir = (LinkedDir)dir.Clone();
+            CurrentLinkedDir.Id = dir.Id;
         }
         else
         {
@@ -50,32 +51,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Move()
-    {
-        Move1();
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        var r =  MessageBox.Show("cancel?","waring",MessageBoxButton.YesNo,MessageBoxImage.Question,MessageBoxResult.No);
-        if (r == MessageBoxResult.Yes)
-        {
-            var ld = _linkedDirService.Get(_selectedDir.Id);
-            var link = CurrentLinkedDir.Link.TrimEnd('\\');
-            Directory.Delete(link, true); // 删除链接
-
-            var target = CurrentLinkedDir.Target.TrimEnd('\\');
-
-            CopyDirectory(target, link);
-            Directory.Delete(target,true);
-            _linkedDirService.Delete(ld);
-            CurrentLinkedDir = new LinkedDir();
-            LoadLinkedDirs();
-        }
-    }
-
-    private async void Move1()
+    private async void Move()
     {
         LinkedDir old = null;
         if (CurrentLinkedDir!.Id != 0)
@@ -93,7 +69,7 @@ public partial class MainViewModel : ObservableObject
 
         if (!Directory.Exists(link))
         {
-            MessageBox.Show("源文件夹不存在");
+            MessageBox.Show("The source dir does not exist");
             return;
         }
 
@@ -122,6 +98,10 @@ public partial class MainViewModel : ObservableObject
                 {
                     CopyDirectory(ot, nt);
                     Directory.Delete(ot);
+                }
+
+                if (old != null && CurrentLinkedDir.Type != old.Type)
+                {
                     Directory.Delete(link, true); // 删除目前的链接
                     await CreateLink(link, target);
                 }
@@ -144,6 +124,26 @@ public partial class MainViewModel : ObservableObject
         }
 
         LoadLinkedDirs();
+    }
+
+    [RelayCommand]
+    private void Cancel()
+    {
+        var r =  MessageBox.Show("Do you really want to cancel current link and move dir to it's original place?","waring",MessageBoxButton.YesNo,MessageBoxImage.Question,MessageBoxResult.No);
+        if (r == MessageBoxResult.Yes)
+        {
+            var ld = _linkedDirService.Get(_selectedDir.Id);
+            var link = CurrentLinkedDir.Link.TrimEnd('\\');
+            Directory.Delete(link, true); // 删除链接
+
+            var target = CurrentLinkedDir.Target.TrimEnd('\\');
+
+            CopyDirectory(target, link);
+            Directory.Delete(target,true);
+            _linkedDirService.Delete(ld);
+            CurrentLinkedDir = new LinkedDir();
+            LoadLinkedDirs();
+        }
     }
 
     private static void CopyDirectory(string link, string target)
@@ -169,7 +169,6 @@ public partial class MainViewModel : ObservableObject
             destination.Create();
         }
 
-        // Copy all files.
         FileInfo[] files = source.GetFiles();
         foreach (FileInfo file in files)
         {
@@ -177,14 +176,10 @@ public partial class MainViewModel : ObservableObject
                 file.Name));
         }
 
-        // Process subdirectories.
         DirectoryInfo[] dirs = source.GetDirectories();
         foreach (DirectoryInfo dir in dirs)
         {
-            // Get destination directory.
             string destinationDir = Path.Combine(destination.FullName, dir.Name);
-
-            // Call CopyDirectory() recursively.
             CopyDirectory(dir, new DirectoryInfo(destinationDir));
         }
     }
@@ -199,8 +194,6 @@ public partial class MainViewModel : ObservableObject
         var ds = _linkedDirService.GetAll();
         foreach (var d in ds)
         {
-            //var c = (LinkedDir)d.Clone();
-            //c.Id = d.Id;
             _linkedDirs.Add(d);
         }
     }

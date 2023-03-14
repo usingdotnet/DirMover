@@ -29,6 +29,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public int Add(LinkedDir linkedDir)
     {
+        linkedDir.Id = _linkedDirs.Count + 1;
         _linkedDirs.Add(linkedDir);
         Save();
         return 1;
