@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <AssemblyName>DirMover</AssemblyName>
+      <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
