@@ -21,7 +21,8 @@ public class JsonLinkedDirService : ILinkedDirService
         }
         else
         {
-            _linkedDirs.AddRange(Utility.TraverseTree(@"C:\Users\Administrator\"));
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            _linkedDirs.AddRange(Utility.TraverseTree(userProfile));
             Save();
         }
 
