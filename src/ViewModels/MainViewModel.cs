@@ -73,7 +73,7 @@ public partial class MainViewModel : ObservableObject
                 link.IsBaseOfSpecialFolder() || target.IsBaseOfSpecialFolder()
             )
             {
-                MessageBox.Show("Can't link a system folder");
+                MessageBox.Show("Can't move a system folder");
                 return;
             }
 
