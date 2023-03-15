@@ -67,51 +67,49 @@ public partial class MainViewModel : ObservableObject
         var link = CurrentLinkedDir.Link.TrimEnd('\\');
         var target = CurrentLinkedDir.Target.TrimEnd('\\');
 
-        if (!Directory.Exists(link))
+        if (Directory.Exists(link))
         {
-            MessageBox.Show("The source dir does not exist");
-            return;
-        }
+            var onlyInfo = false;
+            FileInfo fiLink = new FileInfo(link);
 
-        if (Directory.Exists(target))
-        {
-            //MessageBox.Show("目标文件夹已存在");
-            //return;
-        }
-
-        var onlyInfo = false;
-        FileInfo fiLink = new FileInfo(link);
-
-        if (old != null && old.Target == target && fiLink.FullName == old.Link && CurrentLinkedDir.Type == old.Type)
-        {
-            onlyInfo = true;
-        }
-
-        if (!onlyInfo)
-        {
-            if (fiLink.LinkTarget != null)
+            if (old != null && old.Target == target && fiLink.FullName == old.Link && CurrentLinkedDir.Type == old.Type)
             {
-                var ot = fiLink.LinkTarget.TrimEnd('\\');
-                var nt = target;
+                onlyInfo = true;
+            }
 
-                if (ot != nt)
+            if (!onlyInfo)
+            {
+                if (fiLink.LinkTarget != null)
                 {
-                    CopyDirectory(ot, nt);
-                    Directory.Delete(ot);
+                    var ot = fiLink.LinkTarget.TrimEnd('\\');
+                    var nt = target;
+
+                    if (ot != nt)
+                    {
+                        CopyDirectory(ot, nt);
+                        Directory.Delete(ot);
+                    }
+
+                    if (old != null && CurrentLinkedDir.Type != old.Type)
+                    {
+                        Directory.Delete(link, true); // 删除目前的链接
+                        await CreateLink(link, target);
+                    }
                 }
-
-                if (old != null && CurrentLinkedDir.Type != old.Type)
+                else
                 {
-                    Directory.Delete(link, true); // 删除目前的链接
+                    CopyDirectory(link, target);
+                    Directory.Delete(link, true);
                     await CreateLink(link, target);
                 }
             }
-            else
-            {
-                CopyDirectory(link, target);
-                Directory.Delete(link, true);
-                await CreateLink(link, target);
-            }
+        }
+        else
+        {
+            Directory.CreateDirectory(link);
+            var di = new DirectoryInfo(link);
+            di.Delete(true);
+            await CreateLink(link, target);
         }
 
         if (!_linkedDirService.Contains(CurrentLinkedDir))
@@ -129,18 +127,46 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void Cancel()
     {
-        var r =  MessageBox.Show("Do you really want to cancel current link and move dir to it's original place?","waring",MessageBoxButton.YesNo,MessageBoxImage.Question,MessageBoxResult.No);
+        var r = MessageBox.Show("Do you really want to cancel current link and move dir back to it's original place?", "waring", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
         if (r == MessageBoxResult.Yes)
         {
-            var ld = _linkedDirService.Get(_selectedDir.Id);
+            var ld = _linkedDirService.Get(CurrentLinkedDir.Id);
             var link = CurrentLinkedDir.Link.TrimEnd('\\');
-            Directory.Delete(link, true); // 删除链接
+            if (Directory.Exists(link))
+            {
+                Directory.Delete(link, true); // 删除链接
+                var target = CurrentLinkedDir.Target.TrimEnd('\\');
 
-            var target = CurrentLinkedDir.Target.TrimEnd('\\');
+                CopyDirectory(target, link);
+                Directory.Delete(target, true);
+                _linkedDirService.Delete(ld);
+            }
+            else
+            {
+                Directory.Delete(link, true); // 删除链接
+                _linkedDirService.Delete(ld);
+            }
 
-            CopyDirectory(target, link);
-            Directory.Delete(target,true);
+            CurrentLinkedDir = new LinkedDir();
+            LoadLinkedDirs();
+        }
+    }
+
+    [RelayCommand]
+    private void Delete()
+    {
+        var r = MessageBox.Show("Do you really want to delete current link only but keep dir in current target place?", "waring", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+        if (r == MessageBoxResult.Yes)
+        {
+            var ld = _linkedDirService.Get(CurrentLinkedDir.Id);
+            var link = CurrentLinkedDir.Link.TrimEnd('\\');
+            if (Directory.Exists(link))
+            {
+                Directory.Delete(link, true); // 删除链接
+            }
+
             _linkedDirService.Delete(ld);
+
             CurrentLinkedDir = new LinkedDir();
             LoadLinkedDirs();
         }

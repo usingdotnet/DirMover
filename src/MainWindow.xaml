@@ -64,7 +64,7 @@
             <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Margin" Value="140,5,5,5"/>
+                        <Setter Property="Margin" Value="100,5,5,5"/>
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Top"/>
                         <Setter Property="Padding" Value="5"/>
@@ -74,7 +74,9 @@
 
                 <Button Name="BtnUpdate"   Command="{Binding MoveCommand}" Content="Create Link" />
 
-                <Button Name="BtnCancel"  Command="{Binding CancelCommand}" Content="Cancel Link" ToolTip="Delete the link and move the dir to original place"/>
+                <Button Name="BtnCancel"  Command="{Binding CancelCommand}" Content="Cancel Link" ToolTip="Delete the link and move the target dir to it's original place"/>
+
+                <Button Name="BtnDelete"  Command="{Binding DeleteCommand}" Content="Delete Link" ToolTip="Just delete the link and keep the target dir"/>
 
             </StackPanel>
         </Grid>

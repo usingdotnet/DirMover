@@ -54,4 +54,15 @@ internal class Utility
         r = r.OrderBy(x => x.TimeUpdated).ToList();
         return r;
     }
+
+    public static bool IsSymbolicLink(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        if (file.LinkTarget != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
