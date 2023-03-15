@@ -69,6 +69,14 @@ public partial class MainViewModel : ObservableObject
 
         if (Directory.Exists(link))
         {
+            if (link.IsSpecialFolder() || target.IsSpecialFolder()||
+                link.IsBaseOfSpecialFolder() || target.IsBaseOfSpecialFolder()
+            )
+            {
+                MessageBox.Show("Can't link a system folder");
+                return;
+            }
+
             var onlyInfo = false;
             FileInfo fiLink = new FileInfo(link);
 

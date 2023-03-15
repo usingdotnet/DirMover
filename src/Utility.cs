@@ -3,8 +3,14 @@ using UsingDotNET.DirMover.Models;
 
 namespace UsingDotNET.DirMover;
 
-internal class Utility
+internal static class Utility
 {
+    private  static List<string> _specialFolders;
+    static Utility()
+    {
+        _specialFolders = GetAllSpecialFolders();
+    }
+
     public static List<LinkedDir> TraverseTree(string root)
     {
         int id = 1;
@@ -64,5 +70,36 @@ internal class Utility
         }
 
         return false;
+    }
+
+    public static List<string> GetAllSpecialFolders()
+    {
+        var folders = Enum.GetValues(typeof(Environment.SpecialFolder))
+            .Cast<Environment.SpecialFolder>()
+            .Select(specialFolder => new
+            {
+                Name = specialFolder.ToString(),
+                Path = Environment.GetFolderPath(specialFolder)
+            })
+            .OrderBy(item => item.Path.ToLower()).Where(x => !string.IsNullOrEmpty(x.Path)).Select(x=> x.Path);
+
+        return folders.ToList();
+    }
+
+    public static bool IsBaseOf(this string path1, string path2 )
+    {
+        Uri potentialBase = new Uri(path1);
+        Uri regular = new Uri(path2);
+        return potentialBase.IsBaseOf(regular);
+    }
+
+    public static bool IsSpecialFolder(this string path)
+    {
+        return _specialFolders.Contains(path, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public static bool IsBaseOfSpecialFolder(this string path)
+    {
+        return _specialFolders.Any(sp => path.IsBaseOf(sp));
     }
 }

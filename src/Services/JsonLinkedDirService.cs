@@ -31,7 +31,8 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public int Add(LinkedDir linkedDir)
     {
-        linkedDir.Id = _linkedDirs.Count + 1;
+        var maxId = _linkedDirs.Select(l => l.Id).Max();
+        linkedDir.Id = maxId + 1;
         _linkedDirs.Add(linkedDir);
         Save();
         return 1;
