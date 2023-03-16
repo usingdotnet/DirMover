@@ -105,8 +105,8 @@ public partial class MainViewModel : ObservableObject
 
         if (Directory.Exists(link))
         {
-            if (link.IsSpecialFolder() || link.IsBaseOfSpecialFolder() ||
-                target.IsSpecialFolder() || target.IsBaseOfSpecialFolder()
+            if (link.IsSpecialFolder() || link.IsParentOfSpecialFolder() ||
+                target.IsSpecialFolder() || target.IsParentOfSpecialFolder()
             )
             {
                 MessageBox.Show("Can't move a system folder");

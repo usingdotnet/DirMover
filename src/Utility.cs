@@ -86,11 +86,19 @@ internal static class Utility
         return folders.ToList();
     }
 
-    public static bool IsBaseOf(this string path1, string path2 )
+    public static bool IsParentfolder(this string parentPath, string childPath)
     {
-        Uri potentialBase = new Uri(path1);
-        Uri regular = new Uri(path2);
-        return potentialBase.IsBaseOf(regular);
+        var parentUri = new Uri(parentPath);
+        var childUri = new DirectoryInfo(childPath).Parent;
+        while (childUri != null)
+        {
+            if (new Uri(childUri.FullName) == parentUri)
+            {
+                return true;
+            }
+            childUri = childUri.Parent;
+        }
+        return false;
     }
 
     public static bool IsSpecialFolder(this string path)
@@ -98,9 +106,9 @@ internal static class Utility
         return SpecialFolders.Contains(path, StringComparer.OrdinalIgnoreCase);
     }
 
-    public static bool IsBaseOfSpecialFolder(this string path)
+    public static bool IsParentOfSpecialFolder(this string path)
     {
-        return SpecialFolders.Any(sp => path.IsBaseOf(sp));
+        return SpecialFolders.Any(sp => path.IsParentfolder(sp));
     }
 
     public static long DirSize(DirectoryInfo d)
