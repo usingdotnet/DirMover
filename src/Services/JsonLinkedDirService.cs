@@ -33,6 +33,7 @@ public class JsonLinkedDirService : ILinkedDirService
     {
         int maxId = _linkedDirs.Select(l => l.Id).Max();
         linkedDir.Id = maxId + 1;
+        linkedDir.Name = new DirectoryInfo(linkedDir.Target).Name;
         _linkedDirs.Add(linkedDir);
         Save();
         return 1;
