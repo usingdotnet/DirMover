@@ -13,9 +13,11 @@ public partial class MainViewModel : ObservableObject
 {
     private const string BakSuffix = ".dmbak";
     private readonly ILinkedDirService _linkedDirService;
+    public IAsyncRelayCommand LoadedCommand { get; }
 
     public MainViewModel(ILinkedDirService linkedDirService)
     {
+        LoadedCommand = new AsyncRelayCommand(Loaded);
         _linkedDirService = linkedDirService;
         RegisterMessages();
         LoadLinkedDirs();
@@ -29,6 +31,21 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private LinkedDir _currentLinkedDir = new LinkedDir();
+
+    private async Task Loaded()
+    {
+        await Task.Run(() =>
+        {
+            foreach (var dir in _linkedDirs)
+            {
+                var di = new DirectoryInfo(dir.Target);
+                if (di.Exists)
+                {
+                    dir.Size = Utility.DirSize(di);
+                }
+            }
+        });
+    }
 
     [RelayCommand]
     private void Changed(LinkedDir dir)
@@ -64,13 +81,13 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        var link = CurrentLinkedDir.Link.TrimEnd('\\');
-        var target = CurrentLinkedDir.Target.TrimEnd('\\');
+        string link = CurrentLinkedDir.Link.TrimEnd('\\');
+        string target = CurrentLinkedDir.Target.TrimEnd('\\');
 
         if (Directory.Exists(link))
         {
-            if (link.IsSpecialFolder() || target.IsSpecialFolder()||
-                link.IsBaseOfSpecialFolder() || target.IsBaseOfSpecialFolder()
+            if (link.IsSpecialFolder() || link.IsBaseOfSpecialFolder() ||
+                target.IsSpecialFolder() || target.IsBaseOfSpecialFolder()
             )
             {
                 MessageBox.Show("Can't move a system folder");
@@ -78,7 +95,7 @@ public partial class MainViewModel : ObservableObject
             }
 
             var onlyInfo = false;
-            FileInfo fiLink = new FileInfo(link);
+            var fiLink = new FileInfo(link);
 
             if (old != null && old.Target == target && fiLink.FullName == old.Link && CurrentLinkedDir.Type == old.Type)
             {
@@ -89,8 +106,8 @@ public partial class MainViewModel : ObservableObject
             {
                 if (fiLink.LinkTarget != null)
                 {
-                    var ot = fiLink.LinkTarget.TrimEnd('\\');
-                    var nt = target;
+                    string ot = fiLink.LinkTarget.TrimEnd('\\');
+                    string nt = target;
 
                     if (ot != nt)
                     {
@@ -190,13 +207,13 @@ public partial class MainViewModel : ObservableObject
     private async Task CreateLink(string link, string target)
     {
         var method = $@"/{CurrentLinkedDir.Type.ToString()}";
-        var task = Cli.Wrap("cmd")
+        CommandTask<CommandResult> task = Cli.Wrap("cmd")
             .WithArguments($"""/C mklink {method} "{link}" "{target}" """)
             .ExecuteAsync();
         await task;
     }
 
-    static void CopyDirectory(DirectoryInfo source, DirectoryInfo destination)
+    private static void CopyDirectory(DirectoryInfo source, DirectoryInfo destination)
     {
         if (!destination.Exists)
         {
@@ -218,23 +235,17 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Loads existing ToDos from the DataContext
-    /// </summary>
     private void LoadLinkedDirs()
     {
         LinkedDirs.Clear();
 
-        var ds = _linkedDirService.GetAll();
-        foreach (var d in ds)
+        IEnumerable<LinkedDir> ds = _linkedDirService.GetAll();
+        foreach (LinkedDir d in ds)
         {
             _linkedDirs.Add(d);
         }
     }
 
-    /// <summary>
-    /// Register message to handle a new ToDo created message and adds to ToDos collection
-    /// </summary>
     private void RegisterMessages()
     {
         //WeakReferenceMessenger.Default.Register<ToDoCreatedMessage>(this, (o, e) =>

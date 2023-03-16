@@ -5,10 +5,10 @@ namespace UsingDotNET.DirMover;
 
 internal static class Utility
 {
-    private  static List<string> _specialFolders;
+    private  static readonly List<string> SpecialFolders;
     static Utility()
     {
-        _specialFolders = GetAllSpecialFolders();
+        SpecialFolders = GetAllSpecialFolders();
     }
 
     public static List<LinkedDir> TraverseTree(string root)
@@ -95,11 +95,86 @@ internal static class Utility
 
     public static bool IsSpecialFolder(this string path)
     {
-        return _specialFolders.Contains(path, StringComparer.OrdinalIgnoreCase);
+        return SpecialFolders.Contains(path, StringComparer.OrdinalIgnoreCase);
     }
 
     public static bool IsBaseOfSpecialFolder(this string path)
     {
-        return _specialFolders.Any(sp => path.IsBaseOf(sp));
+        return SpecialFolders.Any(sp => path.IsBaseOf(sp));
     }
+
+    public static long DirSize(DirectoryInfo d)
+    {
+        long size = 0;
+        // Add file sizes.
+        FileInfo[] fis = d.GetFiles();
+        foreach (FileInfo fi in fis)
+        {
+            size += fi.Length;
+        }
+
+        DirectoryInfo[] dis = d.GetDirectories();
+        foreach (DirectoryInfo di in dis)
+        {
+            size += DirSize(di);
+        }
+
+        return size;
+    }
+
+    public static string GetBytesReadable(this long i, int digits = 2)
+    {
+        // Get absolute value
+        long abs = (i < 0 ? -i : i);
+        // Determine the suffix and readable value
+        string suffix;
+        double readable;
+        if (abs >= 0x1000000000000000) // Exabyte
+        {
+            suffix = "EB";
+            readable = (i >> 50);
+        }
+        else if (abs >= 0x4000000000000) // Petabyte
+        {
+            suffix = "PB";
+            readable = (i >> 40);
+        }
+        else if (abs >= 0x10000000000) // Terabyte
+        {
+            suffix = "TB";
+            readable = (i >> 30);
+        }
+        else if (abs >= 0x40000000) // Gigabyte
+        {
+            suffix = "GB";
+            readable = (i >> 20);
+        }
+        else if (abs >= 0x100000) // Megabyte
+        {
+            suffix = "MB";
+            readable = (i >> 10);
+        }
+        else if (abs >= 0x400) // Kilobyte
+        {
+            suffix = "KB";
+            readable = i;
+        }
+        else
+        {
+            return i.ToString("0 B"); // Byte
+        }
+
+        // Divide by 1024 to get fractional value
+        readable /= 1024;
+
+        // Return formatted number with suffix
+        var formatStr = "0.";
+        for (int j = 0; j < digits; j++)
+        {
+            formatStr += '#';
+        }
+
+        return readable.ToString(formatStr) + " " + suffix;
+    }
+
 }

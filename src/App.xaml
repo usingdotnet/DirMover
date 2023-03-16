@@ -6,6 +6,7 @@
     <Application.Resources>
         <converts:EnumBooleanConverter x:Key="enumBooleanConverter" />
         <converts:EnumConverter x:Key="enumConverter" />
+        <converts:SizeConverter x:Key="sizeConverter" />
         <Style TargetType="Button">
             <Setter Property="MinWidth" Value="120"/>
             <Setter Property="MinHeight" Value="60"/>

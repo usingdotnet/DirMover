@@ -6,6 +6,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" FontSize="16" MinHeight="800"
         Title="DirMover" Height="800" Width="900" WindowStartupLocation="CenterScreen">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -14,24 +19,22 @@
             <RowDefinition Height="2*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0" ItemsSource="{Binding LinkedDirs}" Name="LvLinks" SelectedItem="{Binding SelectedDir}" SelectionMode="Single">
-            <ListView.View>
-                <GridView>
-                    <GridView.Columns>
-                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="0"/>
-                        <GridViewColumn Header="App" DisplayMemberBinding="{Binding App}" Width="200"/>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                        <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type, Converter={StaticResource enumConverter}}" Width="200"/>
-                        <GridViewColumn Header="Time Created" DisplayMemberBinding="{Binding TimeCreated, StringFormat={}{0:yyyy-MM-dd hh:mm:ss tt}}" Width="200"/>
-                    </GridView.Columns>
-                </GridView>
-            </ListView.View>
+        <DataGrid Grid.Row="0" ItemsSource="{Binding LinkedDirs}" Name="LvLinks" SelectedItem="{Binding SelectedDir}" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" SelectionMode="Single" AutoGenerateColumns="False" BorderThickness="0" Margin="5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="0" Visibility="Collapsed"/>
+                <DataGridTextColumn Header="App" Binding="{Binding App}" Width="200"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                <DataGridTextColumn Header="Size" Binding="{Binding Size, Converter={StaticResource sizeConverter}}" Width="200"/>
+
+                <DataGridTextColumn Header="Type" Binding="{Binding Type, Converter={StaticResource enumConverter}}" Width="50"/>
+                <DataGridTextColumn Header="Time Created" Binding="{Binding TimeCreated, StringFormat={}{0:yyyy-MM-dd hh:mm:ss}}" Width="*"/>
+            </DataGrid.Columns>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding ChangedCommand}" CommandParameter="{Binding SelectedDir}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </ListView>
+        </DataGrid>
         <Grid Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

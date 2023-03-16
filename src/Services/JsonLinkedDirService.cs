@@ -15,13 +15,13 @@ public class JsonLinkedDirService : ILinkedDirService
         _linkedDirs.Clear();
         if (File.Exists(ConfigFile))
         {
-            var content = File.ReadAllText(ConfigFile, Encoding.UTF8);
+            string content = File.ReadAllText(ConfigFile, Encoding.UTF8);
             _linkedDirs.AddRange(JsonConvert.DeserializeObject<List<LinkedDir>>(content) ?? new List<LinkedDir>());
             _linkedDirs = _linkedDirs.OrderBy(x => x.TimeCreated).ToList();
         }
         else
         {
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             _linkedDirs.AddRange(Utility.TraverseTree(userProfile));
             Save();
         }
@@ -31,7 +31,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public int Add(LinkedDir linkedDir)
     {
-        var maxId = _linkedDirs.Select(l => l.Id).Max();
+        int maxId = _linkedDirs.Select(l => l.Id).Max();
         linkedDir.Id = maxId + 1;
         _linkedDirs.Add(linkedDir);
         Save();
@@ -50,7 +50,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public void Update(LinkedDir ld)
     {
-        var x = _linkedDirs.SingleOrDefault(q => q.Id == ld.Id);
+        LinkedDir x = _linkedDirs.SingleOrDefault(q => q.Id == ld.Id);
         if (x != null)
         {
             x.Link = ld.Link;
@@ -66,7 +66,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public void Delete(LinkedDir ld)
     {
-        var x = _linkedDirs.SingleOrDefault(q => q.Id == ld.Id);
+        LinkedDir x = _linkedDirs.SingleOrDefault(q => q.Id == ld.Id);
         if (x != null)
         {
             _linkedDirs.Remove(x);
@@ -76,7 +76,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     public LinkedDir Get(int id)
     {
-        var x = _linkedDirs.SingleOrDefault(q => q.Id == id);
+        LinkedDir x = _linkedDirs.SingleOrDefault(q => q.Id == id);
         if (x != null)
         {
             return x;
@@ -87,7 +87,7 @@ public class JsonLinkedDirService : ILinkedDirService
 
     private void Save()
     {
-        var str = JsonConvert.SerializeObject(_linkedDirs, Formatting.Indented);
+        string str = JsonConvert.SerializeObject(_linkedDirs, Formatting.Indented);
         File.WriteAllText(ConfigFile, str);
     }
 }

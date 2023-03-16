@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 
 namespace UsingDotNET.DirMover.Models;
 
+[Serializable]
 public partial class LinkedDir:ObservableObject,ICloneable
 {
     [ObservableProperty]
@@ -22,10 +24,18 @@ public partial class LinkedDir:ObservableObject,ICloneable
     [ObservableProperty]
     private LinkType _type;
 
-    //public LinkType Type { get; set; }
-
     public DateTime TimeCreated { get; set; }
+
     public DateTime TimeUpdated { get; set; }
+
+    private long _size;
+
+    [JsonIgnore]
+    public long Size
+    {
+        get => _size;
+        set => SetProperty(ref _size, value);
+    }
 
     public LinkedDir()
     {
