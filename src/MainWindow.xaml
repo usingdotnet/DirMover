@@ -52,10 +52,10 @@
             <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtName" Grid.Row="0" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.App, Mode=TwoWay}"/>
 
             <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0">Source</TextBlock>
-            <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtLink" Grid.Row="1" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Link,Mode=TwoWay}"/>
+            <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtLink" Grid.Row="1" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Link, Mode=TwoWay}" Background="{Binding CurrentLinkedDir.Link,Converter={StaticResource existToBrushConverter}}"/>
 
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">Target</TextBlock>
-            <TextBox Margin="5" HorizontalAlignment="Stretch" Name="TxtTarget" Grid.Row="2" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Target}"/>
+            <TextBox Margin="5" HorizontalAlignment="Stretch" Name="TxtTarget" Grid.Row="2" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Target, Mode=TwoWay}" Background="{Binding CurrentLinkedDir.Target,Converter={StaticResource existToBrushConverter}}"/>
 
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">Method</TextBlock>
             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5">

@@ -12,7 +12,9 @@ namespace UsingDotNET.DirMover.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private const string BakSuffix = ".dmbak";
+    private readonly Dictionary<string, long> _dirSizes = new Dictionary<string, long>();
     private readonly ILinkedDirService _linkedDirService;
+
     public IAsyncRelayCommand LoadedCommand { get; }
 
     public MainViewModel(ILinkedDirService linkedDirService)
@@ -34,14 +36,31 @@ public partial class MainViewModel : ObservableObject
 
     private async Task Loaded()
     {
+
+    }
+
+    private async Task GetDirSize()
+    {
         await Task.Run(() =>
         {
-            foreach (var dir in _linkedDirs)
+            foreach (LinkedDir ld in _linkedDirs)
             {
-                var di = new DirectoryInfo(dir.Target);
+                var dir = ld.Target;
+                var di = new DirectoryInfo(dir);
                 if (di.Exists)
                 {
-                    dir.Size = Utility.DirSize(di);
+                    long size = 0;
+                    if (!_dirSizes.ContainsKey(dir))
+                    {
+                        size =Utility.DirSize(di);
+                        _dirSizes.Add(dir,size);
+                    }
+                    else
+                    {
+                        size = _dirSizes[dir];
+                    }
+
+                    ld.Size = size;
                 }
             }
         });
@@ -235,7 +254,7 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    private void LoadLinkedDirs()
+    private async void LoadLinkedDirs()
     {
         LinkedDirs.Clear();
 
@@ -244,6 +263,8 @@ public partial class MainViewModel : ObservableObject
         {
             _linkedDirs.Add(d);
         }
+
+        await GetDirSize();
     }
 
     private void RegisterMessages()
