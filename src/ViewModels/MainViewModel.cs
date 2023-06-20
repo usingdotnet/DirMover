@@ -261,7 +261,7 @@ public partial class MainViewModel : ObservableObject
         IEnumerable<LinkedDir> ds = _linkedDirService.GetAll();
         foreach (LinkedDir d in ds)
         {
-            _linkedDirs.Add(d);
+            LinkedDirs.Add(d);
         }
 
         await GetDirSize();
