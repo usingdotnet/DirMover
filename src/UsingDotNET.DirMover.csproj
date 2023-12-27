@@ -1,31 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>disable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <AssemblyName>DirMover</AssemblyName>
-      <LangVersion>preview</LangVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <Nullable>disable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <AssemblyName>DirMover</AssemblyName>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Dirs.db-*" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="Dirs.db-*" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.6.*" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
-    <PackageReference Include="Dapper.Contrib" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.*" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.*" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.*" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CliWrap" Version="3.6.*" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
+        <PackageReference Include="Dapper.Contrib" Version="2.0.*" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.*" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.*" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.*" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.*" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Views\" />
+    </ItemGroup>
 
 </Project>
