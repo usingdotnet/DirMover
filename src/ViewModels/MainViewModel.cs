@@ -87,6 +87,15 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void OpenDir(string dir)
+    {
+        var runExplorer = new System.Diagnostics.ProcessStartInfo();
+        runExplorer.FileName = "explorer.exe";
+        runExplorer.Arguments = dir;
+        System.Diagnostics.Process.Start(runExplorer);
+    }
+
+    [RelayCommand]
     private async void Move()
     {
         LinkedDir old = null;

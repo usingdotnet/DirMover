@@ -36,6 +36,14 @@
             </i:Interaction.Triggers>
         </DataGrid>
         <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="100,5,5,5"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="Padding" Value="5"/>
+                </Style>
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -47,15 +55,18 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0">App Name</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtName" Grid.Row="0" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.App, Mode=TwoWay}"/>
 
             <TextBlock Margin="5" VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0">Source</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch"  Name="TxtLink" Grid.Row="1" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Link, Mode=TwoWay}" Background="{Binding CurrentLinkedDir.Link,Converter={StaticResource existToBrushConverter}}"/>
-
+            <Button Grid.Row="1" Grid.Column="2" Margin="5" Command="{Binding OpenDirCommand}" CommandParameter="{Binding Text,ElementName=TxtLink}">Open</Button>
+            
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">Target</TextBlock>
             <TextBox Margin="5" HorizontalAlignment="Stretch" Name="TxtTarget" Grid.Row="2" Grid.Column="1" Height="30" Text="{Binding CurrentLinkedDir.Target, Mode=TwoWay}" Background="{Binding CurrentLinkedDir.Target,Converter={StaticResource existToBrushConverter}}"/>
+            <Button Grid.Row="2" Grid.Column="2" Margin="5" Command="{Binding OpenDirCommand}" CommandParameter="{Binding Text,ElementName=TxtTarget}">Open</Button>
 
             <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">Method</TextBlock>
             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5">
@@ -65,21 +76,14 @@
             </StackPanel>
 
             <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Button}">
-                        <Setter Property="Margin" Value="100,5,5,5"/>
-                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                        <Setter Property="VerticalAlignment" Value="Top"/>
-                        <Setter Property="Padding" Value="5"/>
-                    </Style>
-                </StackPanel.Resources>
+                
                 <Button Name="BtnMove" Command="{Binding NewLinkedDirCommand}" Content="New Link"/>
 
-                <Button Name="BtnUpdate"   Command="{Binding MoveCommand}" Content="Create Link" />
+                <Button Name="BtnUpdate" Command="{Binding MoveCommand}" Content="Create Link" />
 
-                <Button Name="BtnCancel"  Command="{Binding CancelCommand}" Content="Cancel Link" ToolTip="Delete the link and move the target dir to it's original place"/>
+                <Button Name="BtnCancel" Command="{Binding CancelCommand}" Content="Cancel Link" ToolTip="Delete the link and move the target dir to it's original place"/>
 
-                <Button Name="BtnDelete"  Command="{Binding DeleteCommand}" Content="Delete Link" ToolTip="Just delete the link and keep the target dir"/>
+                <Button Name="BtnDelete" Command="{Binding DeleteCommand}" Content="Delete Link" ToolTip="Just delete the link and keep the target dir"/>
 
             </StackPanel>
         </Grid>
