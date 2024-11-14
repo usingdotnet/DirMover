@@ -75,7 +75,7 @@
                 <RadioButton Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" GroupName="a" IsChecked="{Binding CurrentLinkedDir.Type, Converter={StaticResource enumBooleanConverter}, ConverterParameter=J}" Content="/J junction"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Orientation="Horizontal">
+            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="5" Orientation="Horizontal">
                 
                 <Button Name="BtnMove" Command="{Binding NewLinkedDirCommand}" Content="New Link"/>
 
